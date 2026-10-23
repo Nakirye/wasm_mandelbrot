@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mandelbrot: JS vs. Wasm</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 2rem; background: #f6f6f4; color: #222; }
+    h1 { margin-top: 0; }
+    .controls { display: flex; flex-wrap: wrap; gap: 1rem; align-items: end; margin-bottom: 1.5rem; }
+    label { display: flex; flex-direction: column; font-size: .85rem; gap: .25rem; }
+    input, select { padding: .35rem; font-size: 1rem; width: 9rem; }
+    button { padding: .6rem 1.2rem; font-size: 1rem; cursor: pointer; }
+    .canvases { display: flex; flex-wrap: wrap; gap: 1.5rem; }
+    figure { margin: 0; }
+    canvas { display: block; max-width: 100%; background: #000; }
+    figcaption { font-weight: 600; margin-bottom: .4rem; }
+    table { border-collapse: collapse; margin-top: 1.5rem; }
+    th, td { padding: .4rem .9rem; border-bottom: 1px solid #ccc; text-align: right; }
+    th:first-child, td:first-child { text-align: left; }
+    #status { margin-top: 1rem; color: #666; }
+  </style>
+</head>
+<body>
+  <h1>Mandelbrot: JavaScript vs. WebAssembly</h1>
+
+  <div class="controls">
+    <label>Breite <input id="width" type="number" value="800"></label>
+    <label>Höhe <input id="height" type="number" value="600"></label>
+    <label>Max. Iterationen <input id="maxIter" type="number" value="1000"></label>
+    <label>Messläufe <input id="runs" type="number" value="10"></label>
+    <label>Ausschnitt <select id="preset"></select></label>
+    <button id="run">Benchmark starten</button>
+  </div>
+
+  <div class="canvases">
+    <figure><figcaption>JavaScript</figcaption><canvas id="canvasJs"></canvas></figure>
+    <figure><figcaption>WebAssembly (AssemblyScript)</figcaption><canvas id="canvasWasm"></canvas></figure>
+  </div>
+
+  <table>
+    <thead><tr><th></th><th>Median</th><th>Minimum</th></tr></thead>
+    <tbody id="results"></tbody>
+  </table>
+  <p id="status">Lade Wasm-Modul …</p>
+
+  <script type="module" src="main.js"></script>
+</body>
+</html>
