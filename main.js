@@ -3,18 +3,18 @@ import { measure, countDiffs, wasmImports, PRESETS } from "./js/bench-utils.js";
 
 const $ = (id) => document.getElementById(id);
 
-// 1. Wasm-Modul laden
+// 1. Load the Wasm module
 const { instance } = await WebAssembly.instantiateStreaming(
   fetch("build/release.wasm"),
   wasmImports,
 );
 const wasm = instance.exports;
 
-// Ausschnitte ins Dropdown eintragen
+// Add the presets to the dropdown
 for (const [key, p] of Object.entries(PRESETS)) {
   $("preset").add(new Option(p.label, key));
 }
-$("status").textContent = "Bereit.";
+$("status").textContent = "Ready.";
 $("run").addEventListener("click", runBenchmark);
 
 async function runBenchmark() {
@@ -25,25 +25,25 @@ async function runBenchmark() {
   const { cx, cy, zoom } = PRESETS[$("preset").value];
 
   $("run").disabled = true;
-  $("status").textContent = "Messe … (das Fenster kann kurz hängen)";
-  await nextFrame(); // Browser die Statusmeldung anzeigen lassen
+  $("status").textContent = "Measuring … (the window may freeze briefly)";
+  await nextFrame(); // let the browser display the status message
 
-  // 2. JavaScript: Pixel landen in einem normalen Uint32Array
+  // 2. JavaScript: pixels go into a normal Uint32Array
   const jsPixels = new Uint32Array(width * height);
   const jsTime = measure(
     () => mandelbrotJS(jsPixels, width, height, maxIter, cx, cy, zoom), runs);
 
   await nextFrame();
 
-  // 3. Wasm: Pixel landen im Wasm-Speicher.
-  //    Die Sicht (Uint32Array) erst NACH allocBuffer erzeugen,
-  //    weil der Speicher dabei wachsen kann.
+  // 3. Wasm: pixels go into Wasm memory.
+  //    Create the view (Uint32Array) only AFTER allocBuffer,
+  //    because memory may grow during allocation.
   const ptr = wasm.allocBuffer(width, height);
   const wasmPixels = new Uint32Array(wasm.memory.buffer, ptr, width * height);
   const wasmTime = measure(
     () => wasm.mandelbrot(width, height, maxIter, cx, cy, zoom), runs);
 
-  // 4. Ergebnisse anzeigen
+  // 4. Show results
   draw($("canvasJs"), jsPixels, width, height);
   draw($("canvasWasm"), wasmPixels, width, height);
 
@@ -53,12 +53,12 @@ async function runBenchmark() {
   $("results").innerHTML = `
     <tr><td>JavaScript</td><td>${jsTime.median.toFixed(1)} ms</td><td>${jsTime.min.toFixed(1)} ms</td></tr>
     <tr><td>WebAssembly</td><td>${wasmTime.median.toFixed(1)} ms</td><td>${wasmTime.min.toFixed(1)} ms</td></tr>
-    <tr><td>Faktor (JS / Wasm)</td><td colspan="2">${speedup.toFixed(2)}×</td></tr>
-    <tr><td>Abweichende Pixel</td><td colspan="2">${diffs}</td></tr>`;
+    <tr><td>Factor (JS / Wasm)</td><td colspan="2">${speedup.toFixed(2)}×</td></tr>
+    <tr><td>Differing pixels</td><td colspan="2">${diffs}</td></tr>`;
 
   $("status").textContent = diffs === 0
-    ? "Fertig. Beide Bilder sind pixelgenau identisch."
-    : `Fertig, aber ${diffs} Pixel unterscheiden sich.`;
+    ? "Done. Both images are identical pixel for pixel."
+    : `Done, but ${diffs} pixels differ.`;
   $("run").disabled = false;
 }
 

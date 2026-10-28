@@ -1,11 +1,11 @@
 # Mandelbrot: JavaScript vs. WebAssembly
 
-Berechnet die Mandelbrot-Menge einmal in JavaScript und einmal in AssemblyScript
-(kompiliert zu WebAssembly) und vergleicht die Ausführungszeiten.
+Computes the Mandelbrot set once in JavaScript and once in AssemblyScript
+(compiled to WebAssembly) and compares the execution times.
 
-## Voraussetzungen
+## Requirements
 
-- Node.js 18 oder neuer
+- Node.js 18 or newer
 
 ## Setup
 
@@ -14,47 +14,47 @@ npm install --save-dev assemblyscript
 npm run build
 ```
 
-`npm run build` erzeugt `build/release.wasm` (und `build/release.wat`, das
-lesbare Text-Format des Wasm-Moduls).
+`npm run build` generates `build/release.wasm` (and `build/release.wat`, the
+readable text format of the Wasm module).
 
-## Ausführen
+## Running
 
-**Im Browser** (mit Bildern und Ergebnistabelle):
+**In the browser** (with images and results table):
 
 ```bash
 npm start
 ```
 
-Dann <http://localhost:8080> öffnen und „Benchmark starten“ klicken.
+Then open <http://localhost:8080> and click "Run benchmark".
 
-**Im Terminal:**
+**In the terminal:**
 
 ```bash
 npm run bench
 ```
 
-## Projektaufbau
+## Project structure
 
-| Datei | Inhalt |
+| File | Contents |
 |---|---|
 | `assembly/index.ts` | Mandelbrot in AssemblyScript |
-| `js/mandelbrot.js` | derselbe Algorithmus in JavaScript |
-| `js/bench-utils.js` | Messung (Aufwärmen, Median), Pixelvergleich, Ausschnitte |
-| `main.js` + `index.html` | Benchmark-Seite im Browser |
-| `bench-node.mjs` | Benchmark im Terminal |
-| `server.js` | kleiner Webserver (Wasm lässt sich nicht über `file://` laden) |
-| `asconfig.json` | Compiler-Einstellungen (Release: `-O3`, Runtime `stub`) |
+| `js/mandelbrot.js` | the same algorithm in JavaScript |
+| `js/bench-utils.js` | measuring (warm-up, median), pixel comparison, presets |
+| `main.js` + `index.html` | benchmark page in the browser |
+| `bench-node.mjs` | benchmark in the terminal |
+| `server.js` | small web server (Wasm can't be loaded via `file://`) |
+| `asconfig.json` | compiler settings (release: `-O3`, runtime `stub`) |
 
-## Wie gemessen wird
+## How it is measured
 
-- Jede Variante läuft zuerst 3× zum Aufwärmen, damit der JIT-Compiler von
-  JavaScript fair behandelt wird.
-- Danach 10 Messläufe mit `performance.now()`, angegeben wird der **Median**.
-- Beide Varianten verwenden identischen Code und identische Rechenreihenfolge.
-  Die Seite prüft, ob beide Bilder pixelgenau übereinstimmen.
-- Die Wasm-Variante schreibt direkt in ihren linearen Speicher. JavaScript
-  liest das Bild von dort ohne Kopie aus.
+- Each variant first runs 3× to warm up, so that JavaScript's JIT compiler
+  is treated fairly.
+- Then 10 measurement runs with `performance.now()`; the **median** is reported.
+- Both variants use identical code and an identical order of operations.
+  The page checks whether both images match pixel for pixel.
+- The Wasm variant writes directly into its linear memory. JavaScript
+  reads the image from there without copying.
 
-## Ergebnisse
+## Results
 
-_Eigene Messwerte hier eintragen (Browser, Rechner, Werte aus der Tabelle)._
+_Enter your own measurements here (browser, machine, values from the table)._

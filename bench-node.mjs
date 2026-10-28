@@ -1,4 +1,4 @@
-// Benchmark im Terminal: npm run bench
+// Benchmark in the terminal: npm run bench
 import { readFile } from "node:fs/promises";
 import { mandelbrotJS } from "./js/mandelbrot.js";
 import { measure, countDiffs, wasmImports, PRESETS } from "./js/bench-utils.js";
@@ -16,7 +16,7 @@ const ptr = wasm.allocBuffer(WIDTH, HEIGHT);
 const wasmPixels = new Uint32Array(wasm.memory.buffer, ptr, WIDTH * HEIGHT);
 const jsPixels = new Uint32Array(WIDTH * HEIGHT);
 
-console.log(`Mandelbrot ${WIDTH}x${HEIGHT}, ${RUNS} Messläufe pro Eintrag\n`);
+console.log(`Mandelbrot ${WIDTH}x${HEIGHT}, ${RUNS} runs per entry\n`);
 
 const rows = [];
 for (const maxIter of [100, 500, 1000, 3000]) {
@@ -24,11 +24,11 @@ for (const maxIter of [100, 500, 1000, 3000]) {
   const wa = measure(() => wasm.mandelbrot(WIDTH, HEIGHT, maxIter, cx, cy, zoom), RUNS);
 
   rows.push({
-    "Max. Iterationen": maxIter,
+    "Max. iterations": maxIter,
     "JS Median (ms)": +js.median.toFixed(1),
     "Wasm Median (ms)": +wa.median.toFixed(1),
-    "Faktor JS/Wasm": +(js.median / wa.median).toFixed(2),
-    "Abweichende Pixel": countDiffs(jsPixels, wasmPixels),
+    "Factor JS/Wasm": +(js.median / wa.median).toFixed(2),
+    "Differing pixels": countDiffs(jsPixels, wasmPixels),
   });
 }
 

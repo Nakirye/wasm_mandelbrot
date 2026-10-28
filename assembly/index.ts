@@ -1,14 +1,14 @@
 // Mandelbrot in AssemblyScript
 // ----------------------------
-// Die Pixel landen direkt im linearen Speicher von WebAssembly.
-// JavaScript liest sie von dort ohne Kopie aus (siehe main.js).
+// The pixels go directly into WebAssembly's linear memory.
+// JavaScript reads them from there without copying (see main.js).
 
-let buffer: usize = 0;   // Adresse des Pixel-Puffers im Wasm-Speicher
-let capacity: i32 = 0;   // aktuelle Größe des Puffers in Bytes
+let buffer: usize = 0;   // address of the pixel buffer in Wasm memory
+let capacity: i32 = 0;   // current size of the buffer in bytes
 
-// Reserviert Speicher für width * height Pixel (je 4 Bytes: R, G, B, A)
-// und gibt die Adresse zurück. Wichtig: Wenn dabei der Speicher wächst,
-// muss JavaScript seine Sicht auf memory.buffer neu erzeugen.
+// Reserves memory for width * height pixels (4 bytes each: R, G, B, A)
+// and returns the address. Important: if memory grows in the process,
+// JavaScript must recreate its view of memory.buffer.
 export function allocBuffer(width: i32, height: i32): usize {
   const size = width * height * 4;
   if (size > capacity) {
@@ -18,8 +18,8 @@ export function allocBuffer(width: i32, height: i32): usize {
   return buffer;
 }
 
-// Berechnet das Mandelbrot-Bild in den Puffer.
-// centerX/centerY: Bildmitte, zoom: 1 = ganze Menge sichtbar
+// Computes the Mandelbrot image into the buffer.
+// centerX/centerY: image centre, zoom: 1 = whole set visible
 export function mandelbrot(width: i32, height: i32, maxIter: i32,
                            centerX: f64, centerY: f64, zoom: f64): void {
   const scale = 3.0 / (<f64>height * zoom);
@@ -33,7 +33,7 @@ export function mandelbrot(width: i32, height: i32, maxIter: i32,
     for (let px: i32 = 0; px < width; px++) {
       const cx = centerX + (<f64>px - halfW) * scale;
 
-      // z <- z² + c, solange |z| <= 2 und maxIter nicht erreicht
+      // z <- z² + c, while |z| <= 2 and maxIter not reached
       let x = 0.0;
       let y = 0.0;
       let i: i32 = 0;
@@ -50,12 +50,12 @@ export function mandelbrot(width: i32, height: i32, maxIter: i32,
   }
 }
 
-// Farbe aus der Anzahl der Iterationen.
-// Ergebnis als 0xAABBGGRR, damit die Bytes im Speicher R, G, B, A ergeben.
+// Colour from the number of iterations.
+// Result as 0xAABBGGRR, so the bytes in memory read R, G, B, A.
 @inline
 function color(i: i32, maxIter: i32): u32 {
-  if (i >= maxIter) return 0xFF000000; // in der Menge: schwarz
-  const t = Math.sqrt(<f64>i / <f64>maxIter); // Wurzel: hellere Farben am Rand
+  if (i >= maxIter) return 0xFF000000; // in the set: black
+  const t = Math.sqrt(<f64>i / <f64>maxIter); // square root: brighter colours near the edge
   const s = 1.0 - t;
   const r = <u32>(9.0 * s * t * t * t * 255.0);
   const g = <u32>(15.0 * s * s * t * t * 255.0);

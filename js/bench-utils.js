@@ -1,8 +1,8 @@
-// Hilfsfunktionen für die Messung (Browser und Node)
+// Helper functions for measuring (browser and Node)
 
-// Führt fn erst ein paar Mal zum Aufwärmen aus (damit der JIT-Compiler
-// von JavaScript fair behandelt wird), misst dann `runs` Durchläufe
-// und gibt Median und Minimum in Millisekunden zurück.
+// Runs fn a few times first to warm up (so JavaScript's JIT compiler
+// is treated fairly), then measures `runs` runs
+// and returns the median and minimum in milliseconds.
 export function measure(fn, runs = 10, warmup = 3) {
   for (let i = 0; i < warmup; i++) fn();
 
@@ -19,24 +19,24 @@ export function measure(fn, runs = 10, warmup = 3) {
   return { median, min: times[0] };
 }
 
-// Zählt, wie viele Pixel sich zwischen zwei Ergebnissen unterscheiden.
+// Counts how many pixels differ between two results.
 export function countDiffs(a, b) {
   let diffs = 0;
   for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) diffs++;
   return diffs;
 }
 
-// Importe, die das Wasm-Modul erwartet (wird nur bei Fehlern aufgerufen)
+// Imports the Wasm module expects (only called on errors)
 export const wasmImports = {
   env: {
     abort(msg, file, line, col) {
-      throw new Error(`Wasm abort bei ${line}:${col}`);
+      throw new Error(`Wasm abort at ${line}:${col}`);
     },
   },
 };
 
-// Bildausschnitte zum Ausprobieren
+// Image sections to try out
 export const PRESETS = {
-  overview: { label: "Übersicht", cx: -0.5, cy: 0.0, zoom: 1 },
-  seahorse: { label: "Seepferdchental (Zoom 60)", cx: -0.7435, cy: 0.1314, zoom: 60 },
+  overview: { label: "Overview", cx: -0.5, cy: 0.0, zoom: 1 },
+  seahorse: { label: "Seahorse Valley (zoom 60)", cx: -0.7435, cy: 0.1314, zoom: 60 },
 };

@@ -1,5 +1,5 @@
-// Mini-Webserver ohne Abhängigkeiten: npm start
-// (Wasm lässt sich nicht über file:// laden, daher braucht es einen Server.)
+// Minimal web server without dependencies: npm start
+// (Wasm can't be loaded via file://, so a server is needed.)
 import { createServer } from "node:http";
 import { readFile } from "node:fs/promises";
 import { extname, join, normalize } from "node:path";
@@ -24,6 +24,6 @@ createServer(async (req, res) => {
     res.writeHead(200, { "Content-Type": TYPES[extname(file)] ?? "application/octet-stream" });
     res.end(data);
   } catch {
-    res.writeHead(404).end("Nicht gefunden");
+    res.writeHead(404).end("Not found");
   }
-}).listen(PORT, () => console.log(`Läuft auf http://localhost:${PORT}`));
+}).listen(PORT, () => console.log(`Running at http://localhost:${PORT}`));

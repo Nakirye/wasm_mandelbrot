@@ -11,8 +11,8 @@
       pkgs = nixpkgs.legacyPackages.${system};
     in
     {
-      # Nur Node (README: >= 18); npm ist in nodejs enthalten.
-      # Den AssemblyScript-Compiler (asc) holt npm nach node_modules.
+      # Only Node (README: >= 18); npm is included in nodejs.
+      # npm fetches the AssemblyScript compiler (asc) into node_modules.
       devShells.${system}.default = pkgs.mkShell {
         packages = with pkgs; [
           nodejs_24

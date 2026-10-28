@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="de">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -25,12 +25,12 @@
   <h1>Mandelbrot: JavaScript vs. WebAssembly</h1>
 
   <div class="controls">
-    <label>Breite <input id="width" type="number" value="800"></label>
-    <label>Höhe <input id="height" type="number" value="600"></label>
-    <label>Max. Iterationen <input id="maxIter" type="number" value="1000"></label>
-    <label>Messläufe <input id="runs" type="number" value="10"></label>
-    <label>Ausschnitt <select id="preset"></select></label>
-    <button id="run">Benchmark starten</button>
+    <label>Width <input id="width" type="number" value="800"></label>
+    <label>Height <input id="height" type="number" value="600"></label>
+    <label>Max. iterations <input id="maxIter" type="number" value="1000"></label>
+    <label>Runs <input id="runs" type="number" value="10"></label>
+    <label>View <select id="preset"></select></label>
+    <button id="run">Run benchmark</button>
   </div>
 
   <div class="canvases">
@@ -42,7 +42,7 @@
     <thead><tr><th></th><th>Median</th><th>Minimum</th></tr></thead>
     <tbody id="results"></tbody>
   </table>
-  <p id="status">Lade Wasm-Modul …</p>
+  <p id="status">Loading Wasm module …</p>
 
   <script type="module" src="main.js"></script>
 </body>
