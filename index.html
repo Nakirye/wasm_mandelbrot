@@ -3,46 +3,73 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Mandelbrot: JS vs. Wasm</title>
-  <style>
-    body { font-family: system-ui, sans-serif; margin: 2rem; background: #f6f6f4; color: #222; }
-    h1 { margin-top: 0; }
-    .controls { display: flex; flex-wrap: wrap; gap: 1rem; align-items: end; margin-bottom: 1.5rem; }
-    label { display: flex; flex-direction: column; font-size: .85rem; gap: .25rem; }
-    input, select { padding: .35rem; font-size: 1rem; width: 9rem; }
-    button { padding: .6rem 1.2rem; font-size: 1rem; cursor: pointer; }
-    .canvases { display: flex; flex-wrap: wrap; gap: 1.5rem; }
-    figure { margin: 0; }
-    canvas { display: block; max-width: 100%; background: #000; }
-    figcaption { font-weight: 600; margin-bottom: .4rem; }
-    table { border-collapse: collapse; margin-top: 1.5rem; }
-    th, td { padding: .4rem .9rem; border-bottom: 1px solid #ccc; text-align: right; }
-    th:first-child, td:first-child { text-align: left; }
-    #status { margin-top: 1rem; color: #666; }
-  </style>
+  <title>Mandelbrot Benchmark</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <h1>Mandelbrot: JavaScript vs. WebAssembly</h1>
+  <header class="site-header">
+    <a class="brand" href="index.html"><span class="brand-logo">WA</span>Wasm vs. JS</a>
+    <nav class="site-nav">
+      <a href="index.html" aria-current="page">Benchmark</a>
+      <a href="zoom.html">Live zoom</a>
+      <a href="particles.html">Fireworks</a>
+    </nav>
+  </header>
 
-  <div class="controls">
-    <label>Width <input id="width" type="number" value="800"></label>
-    <label>Height <input id="height" type="number" value="600"></label>
-    <label>Max. iterations <input id="maxIter" type="number" value="1000"></label>
-    <label>Runs <input id="runs" type="number" value="10"></label>
-    <label>View <select id="preset"></select></label>
-    <button id="run">Run benchmark</button>
-  </div>
+  <main>
+    <section class="intro">
+      <h1>JavaScript vs. WebAssembly</h1>
+    </section>
 
-  <div class="canvases">
-    <figure><figcaption>JavaScript</figcaption><canvas id="canvasJs"></canvas></figure>
-    <figure><figcaption>WebAssembly (AssemblyScript)</figcaption><canvas id="canvasWasm"></canvas></figure>
-  </div>
+    <section class="panel">
+      <div class="controls">
+        <label class="field">Width <input id="width" type="number" value="800"></label>
+        <label class="field">Height <input id="height" type="number" value="600"></label>
+        <label class="field">Max. iterations <input id="maxIter" type="number" value="1000"></label>
+        <label class="field">Runs <input id="runs" type="number" value="10"></label>
+        <label class="field">View <select id="preset"></select></label>
+        <label class="field">Mode
+          <select id="mode">
+            <option value="warm">Warmed up</option>
+            <option value="cold">Cold start (1st call)</option>
+          </select>
+        </label>
+      </div>
+      <div class="controls" style="margin-top: 1.1rem">
+        <fieldset class="checks">
+          <legend>Variants</legend>
+          <label class="check" data-variant="js"><input id="use-js" type="checkbox" checked><span class="dot"></span> JavaScript</label>
+          <label class="check" data-variant="wasm"><input id="use-wasm" type="checkbox" checked><span class="dot"></span> Wasm</label>
+          <label class="check" data-variant="simd"><input id="use-simd" type="checkbox" checked><span class="dot"></span> Wasm + SIMD</label>
+        </fieldset>
+        <button id="run" class="btn btn-primary">Run benchmark</button>
+      </div>
+    </section>
 
-  <table>
-    <thead><tr><th></th><th>Median</th><th>Minimum</th></tr></thead>
-    <tbody id="results"></tbody>
-  </table>
-  <p id="status">Loading Wasm module …</p>
+    <section class="panel">
+      <h2>Results</h2>
+      <div class="table-scroll">
+        <table class="results">
+          <thead id="resultsHead"></thead>
+          <tbody id="results">
+            <tr class="empty"><td>No results yet. Click "Run benchmark".</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p id="status" class="status">Loading Wasm module …</p>
+    </section>
+
+    <div class="canvases" id="canvases"></div>
+
+    <section class="notes">
+      <div class="note"><strong>Warmed up</strong>Each variant runs 3× before measuring, so the browser has
+        already optimised the code. Then the median of all runs is shown.</div>
+      <div class="note"><strong>Cold start</strong>Each run starts a fresh worker and measures the very
+        first call, before the browser had a chance to optimise anything.</div>
+      <div class="note"><strong>SIMD</strong>One instruction calculates two pixels at once. JavaScript
+        has no access to this, so only Wasm can use it.</div>
+    </section>
+  </main>
 
   <script type="module" src="main.js"></script>
 </body>

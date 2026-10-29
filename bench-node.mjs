@@ -16,19 +16,25 @@ const ptr = wasm.allocBuffer(WIDTH, HEIGHT);
 const wasmPixels = new Uint32Array(wasm.memory.buffer, ptr, WIDTH * HEIGHT);
 const jsPixels = new Uint32Array(WIDTH * HEIGHT);
 
-console.log(`Mandelbrot ${WIDTH}x${HEIGHT}, ${RUNS} runs per entry\n`);
+console.log(`Mandelbrot ${WIDTH}x${HEIGHT}, ${RUNS} runs per entry (median)\n`);
 
 const rows = [];
 for (const maxIter of [100, 500, 1000, 3000]) {
   const js = measure(() => mandelbrotJS(jsPixels, WIDTH, HEIGHT, maxIter, cx, cy, zoom), RUNS);
   const wa = measure(() => wasm.mandelbrot(WIDTH, HEIGHT, maxIter, cx, cy, zoom), RUNS);
+  const diffsWasm = countDiffs(jsPixels, wasmPixels);
+  // the SIMD variant writes into the same Wasm buffer
+  const simd = measure(() => wasm.mandelbrotSimd(WIDTH, HEIGHT, maxIter, cx, cy, zoom), RUNS);
+  const diffsSimd = countDiffs(jsPixels, wasmPixels);
 
   rows.push({
-    "Max. iterations": maxIter,
-    "JS Median (ms)": +js.median.toFixed(1),
-    "Wasm Median (ms)": +wa.median.toFixed(1),
-    "Factor JS/Wasm": +(js.median / wa.median).toFixed(2),
-    "Differing pixels": countDiffs(jsPixels, wasmPixels),
+    "Max. iter.": maxIter,
+    "JS (ms)": +js.median.toFixed(1),
+    "Wasm (ms)": +wa.median.toFixed(1),
+    "Wasm SIMD (ms)": +simd.median.toFixed(1),
+    "JS/Wasm": +(js.median / wa.median).toFixed(2),
+    "JS/SIMD": +(js.median / simd.median).toFixed(2),
+    "Differing px": diffsWasm + diffsSimd,
   });
 }
 

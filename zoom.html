@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mandelbrot Live Zoom</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="index.html"><span class="brand-logo">WA</span>Wasm vs. JS</a>
+    <nav class="site-nav">
+      <a href="index.html">Benchmark</a>
+      <a href="zoom.html" aria-current="page">Live zoom</a>
+      <a href="particles.html">Fireworks</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="intro">
+      <h1>Zooming into the Mandelbrot set</h1>
+    </section>
+
+    <section class="panel">
+      <div class="controls">
+        <label class="field">Size
+          <select id="size">
+            <option value="400x300">400 × 300</option>
+            <option value="640x480" selected>640 × 480</option>
+            <option value="800x600">800 × 600</option>
+          </select>
+        </label>
+        <label class="field">Right side
+          <select id="engine">
+            <option value="simd" selected>WebAssembly + SIMD</option>
+            <option value="wasm">WebAssembly (normal)</option>
+          </select>
+        </label>
+        <button id="auto" class="btn btn-primary">Start auto zoom</button>
+        <button id="reset" class="btn">Reset</button>
+      </div>
+    </section>
+
+    <div class="canvases">
+      <figure class="view interactive" data-variant="js">
+        <figcaption><span class="dot"></span>JavaScript</figcaption>
+        <canvas id="canvasLeft"></canvas>
+        <div class="stats" id="statsLeft">Loading …</div>
+      </figure>
+      <figure class="view interactive" data-variant="simd" id="figureRight">
+        <figcaption><span class="dot"></span><span id="captionRight">WebAssembly + SIMD</span></figcaption>
+        <canvas id="canvasRight"></canvas>
+        <div class="stats" id="statsRight">Loading …</div>
+      </figure>
+    </div>
+    <p class="viewinfo" id="view"></p>
+
+    <section class="notes">
+      <div class="note"><strong>Why two workers?</strong>Each side runs in its own Web Worker, i.e. on its
+        own CPU core. That way the slower side cannot hold up the faster one.</div>
+      <div class="note"><strong>Normal Wasm</strong>Switch the right side to "WebAssembly (normal)":
+        it runs at about the same speed as JavaScript. The advantage comes from SIMD.</div>
+      <div class="note"><strong>Limit</strong>The auto zoom starts over at 10<sup>10</sup>×. Beyond
+        that, normal 64-bit numbers are not precise enough and the image turns into blocks.</div>
+    </section>
+  </main>
+
+  <script type="module" src="zoom.js"></script>
+</body>
+</html>

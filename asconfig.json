@@ -15,6 +15,7 @@
     }
   },
   "options": {
-    "runtime": "stub"
+    "runtime": "stub",
+    "enable": ["simd"]
   }
 }

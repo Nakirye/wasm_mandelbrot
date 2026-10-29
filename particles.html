@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fireworks Benchmark</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="index.html"><span class="brand-logo">WA</span>Wasm vs. JS</a>
+    <nav class="site-nav">
+      <a href="index.html">Benchmark</a>
+      <a href="zoom.html">Live zoom</a>
+      <a href="particles.html" aria-current="page">Fireworks</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="intro">
+      <h1>Fireworks: objects vs. typed arrays vs. Wasm</h1>
+    </section>
+
+    <section class="panel">
+      <div class="controls">
+        <label class="field">Particles
+          <select id="target">
+            <option value="10000">10,000</option>
+            <option value="100000">100,000</option>
+            <option value="300000" selected>300,000</option>
+            <option value="1000000">1,000,000</option>
+          </select>
+        </label>
+        <button id="restart" class="btn">Restart</button>
+      </div>
+    </section>
+
+    <div class="canvases" id="canvases"></div>
+
+    <section class="notes">
+      <div class="note" data-variant="objects"><strong><span class="dot"></span> JavaScript (objects)</strong>
+        One object per particle, the usual way to write it. Burnt-out sparks have to be removed
+        by the garbage collector, which causes short pauses ("slowest frame").</div>
+      <div class="note" data-variant="typed"><strong><span class="dot"></span> JavaScript (typed arrays)</strong>
+        No objects: one number array per property (<code>xs</code>, <code>ys</code>, …),
+        particle <code>i</code> is position <code>i</code> in every array.</div>
+      <div class="note" data-variant="wasm"><strong><span class="dot"></span> WebAssembly</strong>
+        The same table layout as the typed arrays, inside the Wasm memory.
+        Wasm has no JavaScript objects, so this is the natural way to write it there.</div>
+    </section>
+  </main>
+
+  <script type="module" src="particles.js"></script>
+</body>
+</html>

@@ -15,7 +15,8 @@ const TYPES = {
 };
 
 createServer(async (req, res) => {
-  const path = req.url === "/" ? "/index.html" : req.url.split("?")[0];
+  const url = req.url.split("?")[0];
+  const path = url === "/" ? "/index.html" : url;
   const file = join(ROOT, normalize(path));
   if (!file.startsWith(ROOT)) return res.writeHead(403).end();
 
